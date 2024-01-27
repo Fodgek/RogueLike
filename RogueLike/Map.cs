@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueLike
+﻿namespace RogueLike
 {
     internal struct Map
     {
-        public int _SizeX ;
-        public int _SizeY ;
+        public int _roomCount;
+        public Room[] _roomes;
         public Map() {
-            _SizeX = 101;
-            _SizeY = 101;
+            _roomCount = 2;
+            _roomes = new Room[_roomCount];
         }
-        public Map(int SizeX, int SizeY) { 
-            _SizeX = SizeX; 
-            _SizeY = SizeY;
+        public Map(int roomCount) { 
+            _roomCount = roomCount;
+            _roomes = new Room[_roomCount];
         }
-        public void CreateMap() {
-            Console.SetCursorPosition(1, 1);
+        private void CreateRoom() {
+            for (int num = 0; num < _roomCount; num++) 
+                _roomes[num] = new Room();
         }
     }
 }

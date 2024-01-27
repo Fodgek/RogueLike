@@ -2,46 +2,47 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 namespace RogueLike
 {
-    internal struct Room
+    internal class Room
     {
+        static int _nextId;
+        public int _roomId { get; private set; }
         public int _SizeX;
         public int _SizeY;
-        public GameObject[,] _objArr;
+        public GameObject[,] _objs;
+        public static Action<int, double[]>? Free;
         public Room() {
             _SizeX = 12;
             _SizeY = _SizeX;
-            _objArr = new GameObject[_SizeX, _SizeY];
-            Walls();
+            _objs = new GameObject[_SizeX, _SizeY];
+            _roomId = Interlocked.Increment(ref _nextId);
+            Fill();
         }
         public Room(int SizeX, int SizeY) {
             _SizeX = SizeX < 3 ? 12 : SizeX;
             _SizeY = SizeY < 3 ? 12 : SizeY;
-            _objArr = new GameObject[_SizeX, _SizeY];
-            Walls();
+            _objs = new GameObject[_SizeX, _SizeY];
+            _roomId = Interlocked.Increment(ref _nextId);
+            Fill();
         }
-        
-        public void AddObj(GameObject obj) => _objArr[obj._X, obj._Y] = obj;
-        public void DelObj(GameObject obj) => _objArr[obj._X, obj._Y] = new GameObject();
-        public void MoveObj(GameObject obj) {
-            
-        }
-        private void Walls() {
-            char wall_img = '#';
-            string wall_name = "Wall";
-            string wall_description = "Wall of Room";
 
-            for (int X = 0; X < _SizeX; X++) 
-                for (int Y = 0; Y < _SizeY; Y++) {
-                    _objArr[X, Y] = new GameObject();
-                    _objArr[0, Y] = new GameObject(wall_img, wall_name, wall_description, 0, Y);
-                    _objArr[X, 0] = new GameObject(wall_img, wall_name, wall_description, X, 0);
-                    _objArr[_SizeX - 1, Y] = new GameObject(wall_img, wall_name, wall_description, _SizeX - 1, Y);
-                    _objArr[X, _SizeY - 1] = new GameObject(wall_img, wall_name, wall_description, X, _SizeY - 1);
-                }
+        private void Fill() {
+            for (int X = 0; X < _SizeX; X++)
+                for (int Y = 0; Y < _SizeY; Y++)
+                    _objs[X,Y] = new GameObject();
+        }
+        public void AddObj(GameObject obj) {
+            _objs[obj._tForm._X, obj._tForm._Y] = obj;
+            obj.Moved += MoveObj;
+        }
+        public void DelObj(GameObject obj) {
+            _objs[obj._tForm._X, obj._tForm._Y] = new GameObject();
+            obj.Moved -= MoveObj;
+        }
+        private void MoveObj(Transform oldForm, Transform newForm) {
+            _objs[newForm._X,newForm._Y] = _objs[oldForm._X, oldForm._Y];
+            _objs[oldForm._X, oldForm._Y] = new GameObject();
         }
     }
 }

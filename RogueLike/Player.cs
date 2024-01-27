@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace RogueLike
 {
-    internal class LiveObject : GameObject
+    internal class Player : GameObject
     {
         private Health _health;
-        public LiveObject() {
+        public Player() {
             _health = new Health();
             _img = new Image();
             _Name = string.Empty;
             _Description = string.Empty;
-            _X = 0; 
-            _Y = 0; 
+            _tForm = new Transform();
         }
-        public LiveObject(int hp,
+        public Player(int hp,
                           char img,
                           string name,
                           string? description,
-                          int X,
-                          int Y) : base(img, name, description, X, Y)
+                          Transform tForm,
+                          PlayerControls controls) : base(img, name, description, tForm)
         {
             _health = new Health(hp);
         }
+        public void HP() => Console.WriteLine(_health._value);
     }
 }

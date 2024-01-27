@@ -1,52 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueLike
+﻿namespace RogueLike
 {
     internal class GameObject
     {
-        public Image _img { get; set; }
-        public string _Name { get; set; }
-        public string? _Description { get; set; }
-        public int _X { get; set; }
-        public int _Y { get; set; }
-        public static Action<int,int> ?PosChanged;
-
+        static int _nextId;
+        public int _GameObjId { get; private set; }
+        public Image _img;
+        public string _Name;
+        public string? _Description;
+        public Transform _tForm;
+        public Action<Transform, Transform>? Moved;
         public GameObject() { 
             _img = new Image();
             _Name = string.Empty;
             _Description = string.Empty;
+            _tForm = new Transform();
+            _GameObjId = Interlocked.Increment(ref _nextId);
         }
         public GameObject(char img,
                           string name,
                           string? description,
-                          int X,
-                          int Y)
+                          Transform tForm)
         {
             _img = new Image(img);
             _Name = name;
             _Description = description;
-            _X= X;
-            _Y= Y;
+            _tForm = tForm;
+            _GameObjId = Interlocked.Increment(ref _nextId);
         }
 
-        public void IAm() {
-            if (_Description == null)
-            { Console.WriteLine($"I am: {_Name}"); }
-            else 
-            { Console.WriteLine($"I am: {_Name} \nDescription: {_Description}"); }
-        }
-        public void MoveTo(int X, int Y) {
-            _X = X;
-            _Y = Y;
-            PosChanged?.Invoke(_X,_Y);
-        }
+        public void Info() => Console.WriteLine($"ID: {_GameObjId} \nName: {_Name} \nDescription: {_Description} \nPosition: {_tForm._X} : {_tForm._Y}");
+
         public void WasToched() {
             
         }
-
+        public void MoveTo(Transform tform) {
+            Transform _oldForm = _tForm;
+            _tForm = tform; 
+            Moved?.Invoke(_oldForm, _tForm);
+        }
     }
 }
