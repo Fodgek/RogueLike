@@ -11,6 +11,7 @@ var controler = new PlayerControls();
 var game = true;
 var room1 = new Room();
 room1.AddObj(player1);
+room1.AddObj(wall);
 var rend = new Renderer();
 
 while (game == true) 
@@ -18,6 +19,7 @@ while (game == true)
     rend.RenderFrame(room1);
     controler.Move(player1);
     rend.ClearFrame();
+    player1.Info();
     //if (Console.ReadKey().Key == ConsoleKey.Escape) game = false;
 }
     

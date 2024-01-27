@@ -11,7 +11,6 @@ namespace RogueLike
         public int _SizeX;
         public int _SizeY;
         public GameObject[,] _objs;
-        public static Action<int, double[]>? Free;
         public Room() {
             _SizeX = 12;
             _SizeY = _SizeX;
@@ -33,16 +32,41 @@ namespace RogueLike
                     _objs[X,Y] = new GameObject();
         }
         public void AddObj(GameObject obj) {
-            _objs[obj._tForm._X, obj._tForm._Y] = obj;
-            obj.Moved += MoveObj;
+            if (ChekBorder(obj)) Console.WriteLine("{0} not added", obj._Name);
+            else {
+                _objs[obj._tForm._X, obj._tForm._Y] = obj;
+                obj.Moved += MoveObj;
+            }
         }
         public void DelObj(GameObject obj) {
             _objs[obj._tForm._X, obj._tForm._Y] = new GameObject();
             obj.Moved -= MoveObj;
         }
         private void MoveObj(Transform oldForm, Transform newForm) {
-            _objs[newForm._X,newForm._Y] = _objs[oldForm._X, oldForm._Y];
-            _objs[oldForm._X, oldForm._Y] = new GameObject();
+            if (ChekBorder(newForm))
+                _objs[oldForm._X, oldForm._Y]._tForm = oldForm;
+            else if (ChekObj(newForm, string.Empty))
+            {
+                _objs[newForm._X, newForm._Y] = _objs[oldForm._X, oldForm._Y];
+                _objs[oldForm._X, oldForm._Y] = new GameObject();
+            }
+            else _objs[oldForm._X, oldForm._Y]._tForm = oldForm;
+        }
+        private bool ChekBorder(Transform tForm){
+            if (tForm._X < 0 || tForm._X > _SizeX - 1 || tForm._Y < 0 || tForm._Y > _SizeY - 1)
+                return true;
+            else return false;
+        }
+        private bool ChekBorder(GameObject obj)
+        {
+            if (obj._tForm._X < 0 || obj._tForm._X > _SizeX - 1 || obj._tForm._Y < 0 || obj._tForm._Y > _SizeY - 1)
+                return true;
+            else return false;
+        }
+        private bool ChekObj(Transform tForm, string tag) {
+            if (_objs[tForm._X,tForm._Y]._Name == tag)
+                return true;
+            else return false;
         }
     }
 }
