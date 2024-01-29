@@ -5,16 +5,16 @@
         public int _roomCount;
         public Room[] _roomes;
         public Map() {
-            _roomCount = 2;
+            _roomCount = 1;
             _roomes = new Room[_roomCount];
+            _roomes[0] = new Room();
         }
         public Map(int roomCount) { 
             _roomCount = roomCount;
             _roomes = new Room[_roomCount];
         }
-        private void CreateRoom() {
-            for (int num = 0; num < _roomCount; num++) 
-                _roomes[num] = new Room();
+        private void AddRoom(Room room) {
+            _roomes[room._roomId] = room;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace RogueLike
 {
-    internal class Damage
+    internal class Weapon
     {
 
     }

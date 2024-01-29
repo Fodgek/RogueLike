@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 namespace RogueLike
 {
     internal class Room
     {
-        static int _nextId;
+        static int _nextId = -1;
         public int _roomId { get; private set; }
         public int _SizeX;
         public int _SizeY;
         public GameObject[,] _objs;
+        public Action<GameObject, bool>? ObjDead;
         public Room() {
             _SizeX = 12;
             _SizeY = _SizeX;
@@ -32,41 +34,67 @@ namespace RogueLike
                     _objs[X,Y] = new GameObject();
         }
         public void AddObj(GameObject obj) {
-            if (ChekBorder(obj)) Console.WriteLine("{0} not added", obj._Name);
+            if (IsObj(obj)) Console.WriteLine("{0} not added", obj._Name);
             else {
                 _objs[obj._tForm._X, obj._tForm._Y] = obj;
                 obj.Moved += MoveObj;
+                obj.Attacked += Damage;
             }
         }
-        public void DelObj(GameObject obj) {
+        public void RemoveObj(GameObject obj) {
             _objs[obj._tForm._X, obj._tForm._Y] = new GameObject();
             obj.Moved -= MoveObj;
+            obj.Attacked -= Damage;
         }
+        public void RemoveObj(Transform tForm)
+        {
+            _objs[tForm._X, tForm._Y] = new GameObject();
+            _objs[tForm._X, tForm._Y].Moved -= MoveObj;
+            _objs[tForm._X, tForm._Y].Attacked -= Damage;
+        }
+
         private void MoveObj(Transform oldForm, Transform newForm) {
-            if (ChekBorder(newForm))
-                _objs[oldForm._X, oldForm._Y]._tForm = oldForm;
-            else if (ChekObj(newForm, string.Empty))
+            if (IsBorder(newForm))
+                _objs[oldForm._X, oldForm._Y]._tForm = new Transform(oldForm._X,oldForm._Y,newForm._direction);
+            else if (IsEmpty(newForm))
             {
                 _objs[newForm._X, newForm._Y] = _objs[oldForm._X, oldForm._Y];
-                _objs[oldForm._X, oldForm._Y] = new GameObject();
+                _objs[oldForm._X, oldForm._Y] = new GameObject()            ;
             }
-            else _objs[oldForm._X, oldForm._Y]._tForm = oldForm;
+            else _objs[oldForm._X, oldForm._Y]._tForm = new Transform(oldForm._X, oldForm._Y, newForm._direction); ;
         }
-        private bool ChekBorder(Transform tForm){
+        private void Damage(Image img, Transform tForm, int amount) {
+            if (IsBorder(tForm) == false)
+                if(IsEmpty(tForm) == false) {
+                    GetObj(tForm)._health.ChangeHealth(amount);
+                    if (GetObj(tForm)._health._value <= 0) {
+                        RemoveObj(tForm);
+                        ObjDead?.Invoke(GetObj(tForm),true);
+                    }
+                }
+        }
+        private bool IsBorder(Transform tForm){
             if (tForm._X < 0 || tForm._X > _SizeX - 1 || tForm._Y < 0 || tForm._Y > _SizeY - 1)
                 return true;
             else return false;
         }
-        private bool ChekBorder(GameObject obj)
-        {
+        private bool IsObj(GameObject obj) {
             if (obj._tForm._X < 0 || obj._tForm._X > _SizeX - 1 || obj._tForm._Y < 0 || obj._tForm._Y > _SizeY - 1)
                 return true;
             else return false;
         }
-        private bool ChekObj(Transform tForm, string tag) {
-            if (_objs[tForm._X,tForm._Y]._Name == tag)
+        private bool IsEmpty(Transform tForm) {
+            if (_objs[tForm._X,tForm._Y]._Name == string.Empty) return true;
+            else return false;
+        }
+        public bool IsObjWithTag(Transform tForm, string tag)
+        {
+            if (_objs[tForm._X, tForm._Y]._Name == tag)
                 return true;
             else return false;
+        }
+        public GameObject GetObj(Transform tForm) {
+            return _objs[tForm._X, tForm._Y];
         }
     }
 }

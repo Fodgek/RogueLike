@@ -10,8 +10,7 @@
                 for (int Y = 0; Y < room._SizeY; Y++)
                     Console.Write("{0,2}", room._objs[X, Y]._img._symbol);
                 Console.WriteLine();
-            }
-                
+            }   
         }
         public void ClearFrame() => Console.Clear();
     }
