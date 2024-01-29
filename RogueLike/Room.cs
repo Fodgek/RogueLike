@@ -42,15 +42,14 @@ namespace RogueLike
             }
         }
         public void RemoveObj(GameObject obj) {
-            _objs[obj._tForm._X, obj._tForm._Y] = new GameObject();
             obj.Moved -= MoveObj;
             obj.Attacked -= Damage;
+            _objs[obj._tForm._X, obj._tForm._Y] = new GameObject();
         }
-        public void RemoveObj(Transform tForm)
-        {
-            _objs[tForm._X, tForm._Y] = new GameObject();
+        public void RemoveObj(Transform tForm) {
             _objs[tForm._X, tForm._Y].Moved -= MoveObj;
             _objs[tForm._X, tForm._Y].Attacked -= Damage;
+            _objs[tForm._X, tForm._Y] = new GameObject();
         }
 
         private void MoveObj(Transform oldForm, Transform newForm) {
@@ -84,7 +83,7 @@ namespace RogueLike
             else return false;
         }
         private bool IsEmpty(Transform tForm) {
-            if (_objs[tForm._X,tForm._Y]._Name == string.Empty) return true;
+            if (_objs[tForm._X,tForm._Y]._img._symbol == new Image()._symbol) return true;
             else return false;
         }
         public bool IsObjWithTag(Transform tForm, string tag)
